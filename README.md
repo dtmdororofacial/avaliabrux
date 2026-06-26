@@ -4,7 +4,7 @@
 
 Ferramenta web de página única (HTML/CSS/JS, sem servidor) para apoiar a avaliação de bruxismo durante a consulta. Organiza a coleta em módulos selecionáveis e gera, ao final, um resumo narrativo pronto para copiar para o prontuário.
 
-🔗 **Acesse:** https://SEU-USUARIO.github.io/avaliabrux/
+🔗 **Acesse:** https://dtmdororofacial.github.io/avaliabrux/
 
 > Substitua `SEU-USUARIO` pelo seu nome de usuário do GitHub.
 
