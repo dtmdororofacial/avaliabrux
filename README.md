@@ -6,8 +6,6 @@ Ferramenta web de página única (HTML/CSS/JS, sem servidor) para apoiar a avali
 
 🔗 **Acesse:** https://dtmdororofacial.github.io/avaliabrux/
 
-> Substitua `SEU-USUARIO` pelo seu nome de usuário do GitHub.
-
 ---
 
 ## Módulos
