@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AvaliaBrux — Avaliação estruturada de bruxismo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primaria:#CF5331;
+  --ambar:#E6B02E;
+  --fundo:#FBF7F2;
+  --texto:#262026;
+  --vermelho:#C8332B;
+  --branco:#FFFFFF;
+  --cinza:#6B6570;
+  --linha:#E4DCD2;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--fundo);
+  color:var(--texto);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:880px;margin:0 auto;padding:32px 20px 80px;}
+h1,h2,h3{font-family:'Archivo Black',sans-serif;font-weight:400;letter-spacing:.2px;}
+.appname{font-family:'Archivo Black',sans-serif;color:var(--primaria);font-size:44px;line-height:1.05;margin:0;}
+.subtitle{color:var(--cinza);font-size:17px;margin:6px 0 0;}
+
+/* Cards de módulo */
+.intro-lead{margin:34px 0 14px;font-weight:600;}
+.modules{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:620px){.modules{grid-template-columns:1fr;}}
+.mod-card{
+  border:1px solid var(--linha);
+  border-radius:6px;
+  background:var(--branco);
+  padding:18px 18px 18px 46px;
+  position:relative;
+  cursor:pointer;
+  transition:border-color .15s, box-shadow .15s;
+}
+.mod-card:hover{border-color:var(--ambar);}
+.mod-card.selected{border-color:var(--primaria);box-shadow:0 0 0 1px var(--primaria) inset;}
+.mod-card.disabled{cursor:default;opacity:.95;}
+.mod-card .check{
+  position:absolute;left:16px;top:18px;width:20px;height:20px;border-radius:4px;
+  border:2px solid var(--linha);background:var(--branco);
+}
+.mod-card.selected .check{background:var(--primaria);border-color:var(--primaria);}
+.mod-card.selected .check::after{
+  content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;
+  border:solid var(--branco);border-width:0 2px 2px 0;transform:rotate(45deg);
+}
+.mod-card h3{font-size:16px;margin:0 0 4px;}
+.mod-card p{margin:0;font-size:14px;color:var(--cinza);}
+.mod-card .locked-tag{display:inline-block;margin-top:8px;font-size:11px;color:var(--primaria);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+
+.exclusive-warn{margin:12px 2px 0;font-size:13px;color:var(--vermelho);min-height:18px;}
+
+.info-box{
+  margin:22px 0 0;padding:14px 16px;border-left:3px solid var(--ambar);
+  background:#FBF1DC;border-radius:4px;font-size:14px;color:#5a4a1e;
+}
+
+/* Botões */
+.btn{
+  font-family:'Inter',sans-serif;font-size:16px;font-weight:600;
+  border:none;border-radius:4px;padding:13px 26px;cursor:pointer;
+}
+.btn-primary{background:var(--primaria);color:var(--branco);}
+.btn-primary:hover{background:#b8482a;}
+.btn-ghost{background:var(--branco);color:var(--texto);border:1px solid var(--linha);}
+.btn-ghost:hover{border-color:var(--cinza);}
+.btn-row{display:flex;justify-content:space-between;gap:12px;margin-top:30px;}
+.start-row{margin-top:30px;}
+
+/* Rodapé inicial */
+footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--linha);}
+footer .block{font-size:12.5px;color:var(--cinza);margin-bottom:18px;line-height:1.5;}
+footer .block strong{color:var(--texto);}
+footer ol{margin:6px 0 0;padding-left:18px;}
+footer li{margin-bottom:6px;}
+
+/* Progresso */
+.progress-head{margin-bottom:6px;font-weight:600;font-size:14px;color:var(--primaria);}
+.progress-track{height:8px;background:var(--linha);border-radius:6px;overflow:hidden;margin-bottom:28px;}
+.progress-fill{height:100%;background:var(--primaria);width:0;transition:width .25s;}
+
+/* Formulário */
+.module-title{font-size:24px;color:var(--texto);margin:0 0 4px;}
+.section{margin:26px 0;padding:20px;background:var(--branco);border:1px solid var(--linha);border-radius:6px;}
+.section > h3{font-size:17px;margin:0 0 4px;color:var(--primaria);}
+.section .sec-instruction{font-style:italic;color:var(--cinza);font-size:14px;margin:0 0 12px;}
+.field{margin:18px 0;}
+.field:first-of-type{margin-top:8px;}
+.field > label.q{display:block;font-weight:600;margin-bottom:8px;}
+.options{display:flex;flex-wrap:wrap;gap:8px 18px;}
+.options label{
+  display:inline-flex;align-items:center;gap:7px;font-size:15px;cursor:pointer;
+  padding:5px 10px;border:1px solid var(--linha);border-radius:4px;background:var(--fundo);
+}
+.options input{accent-color:var(--primaria);width:17px;height:17px;}
+.options label:has(input:checked){border-color:var(--primaria);background:#fbe9e2;}
+textarea,input[type=text],input[type=number]{
+  width:100%;font-family:'Inter',sans-serif;font-size:16px;color:var(--texto);
+  border:1px solid var(--linha);border-radius:4px;padding:10px 12px;background:var(--branco);
+}
+textarea{min-height:90px;resize:vertical;}
+input[type=number]{max-width:160px;}
+.spec-field{margin-top:10px;}
+.spec-field.hidden{display:none;}
+.spec-field label{display:block;font-size:13px;color:var(--cinza);margin-bottom:4px;}
+
+/* divisor de subgrupo */
+.subgroup{margin-top:22px;padding-top:6px;}
+.subgroup > h4{font-size:15px;margin:0 0 2px;color:var(--texto);font-family:'Inter';font-weight:700;}
+
+/* Sextantes */
+.sextant-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px;}
+@media(max-width:560px){.sextant-grid{grid-template-columns:1fr;}}
+.sextant-cell{border:1px solid var(--linha);border-radius:6px;padding:10px;background:var(--fundo);}
+.sextant-cell .sx-name{font-weight:700;font-size:13px;margin-bottom:6px;}
+.scale-row{display:flex;gap:6px;flex-wrap:wrap;}
+.scale-row label{
+  display:inline-flex;flex-direction:column;align-items:center;font-size:13px;cursor:pointer;
+  border:1px solid var(--linha);border-radius:4px;padding:3px 8px;background:var(--branco);min-width:34px;
+}
+.scale-row label:has(input:checked){border-color:var(--primaria);background:#fbe9e2;font-weight:700;}
+.scale-row input{accent-color:var(--primaria);}
+.scale-legend{font-size:12px;color:var(--cinza);margin:8px 0 0;line-height:1.5;}
+
+/* Matriz por sextante */
+.matrix{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;display:block;overflow-x:auto;}
+.matrix table{border-collapse:collapse;width:100%;min-width:520px;}
+.matrix th,.matrix td{border:1px solid var(--linha);padding:6px 8px;text-align:center;}
+.matrix th:first-child,.matrix td:first-child{text-align:left;font-weight:600;}
+.matrix thead th{background:#f3ece2;font-size:12px;}
+.matrix .cellopts{display:flex;gap:6px;justify-content:center;}
+.matrix .cellopts label{display:inline-flex;align-items:center;gap:3px;cursor:pointer;font-size:12px;}
+
+/* Tela 3 resumo */
+.summary-head h1{font-size:30px;color:var(--primaria);margin:0;}
+.summary-meta{color:var(--cinza);font-size:14px;margin:4px 0 24px;}
+.summary-body{background:var(--branco);border:1px solid var(--linha);border-radius:6px;padding:24px;}
+.summary-body h3{font-size:16px;color:var(--primaria);margin:22px 0 6px;}
+.summary-body h3:first-child{margin-top:0;}
+.summary-body p{margin:0 0 10px;font-size:15.5px;}
+.summary-empty{color:var(--cinza);font-style:italic;}
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
+  background:var(--texto);color:var(--branco);padding:11px 20px;border-radius:4px;
+  font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;
+}
+.toast.show{opacity:1;}
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<!-- ====================== TELA 1 ====================== -->
+<div id="screen-home" class="wrap">
+  <header>
+    <h1 class="appname">AvaliaBrux</h1>
+    <p class="subtitle">Avaliação estruturada de bruxismo para uso clínico</p>
+  </header>
+
+  <p class="intro-lead">Selecione os módulos que deseja aplicar nesta consulta.</p>
+  <div class="modules" id="modules"></div>
+  <p class="exclusive-warn" id="exclusive-warn"></p>
+
+  <div class="info-box">
+    Nenhuma resposta é obrigatória — preencha apenas os itens que julgar pertinentes e avance livremente entre os módulos.
+  </div>
+
+  <div class="info-box">
+    Caso tenha realizado avaliação instrumental (EMG, PSG, sensor de movimento), registre os dados no campo de observações ao final da avaliação.
+  </div>
+
+  <div class="start-row">
+    <button class="btn btn-primary" id="btn-start">Iniciar avaliação</button>
+  </div>
+
+  <footer>
+    <div class="block">
+      <strong>Referências.</strong> Esta ferramenta foi desenvolvida com base no STAB e no BruxScreen.
+      <ol>
+        <li>Manfredini D, Ahlberg J, Aarab G, Bender S, Bracci A, Cistulli PA, et al. Standardised Tool for the Assessment of Bruxism. J Oral Rehabil. 2024;51(1):29-58. doi:10.1111/joor.13411</li>
+        <li>Lobbezoo F, Ahlberg J, Verhoeff MC, Aarab G, Bracci A, Koutris M, et al. The bruxism screener (BruxScreen): development, pilot testing and face validity. J Oral Rehabil. 2024;51(1):59-66. doi:10.1111/joor.13442</li>
+      </ol>
+    </div>
+    <div class="block">
+      <strong>Desenvolvimento.</strong> Desenvolvida por Profa. Dra. Juliana Stuginski Barbosa | @dtmdororofacial
+    </div>
+    <div class="block">
+      <strong>Privacidade.</strong> Nenhum dado inserido nesta ferramenta é armazenado ou transmitido. Todas as informações permanecem exclusivamente no dispositivo do usuário durante o uso. Em conformidade com a LGPD.
+    </div>
+  </footer>
+</div>
+
+<!-- ====================== TELA 2 ====================== -->
+<div id="screen-form" class="wrap hidden">
+  <div class="progress-head" id="progress-head"></div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  <div id="form-content"></div>
+  <div class="btn-row">
+    <button class="btn btn-ghost" id="btn-prev">Anterior</button>
+    <button class="btn btn-primary" id="btn-next">Próximo</button>
+  </div>
+</div>
+
+<!-- ====================== TELA 3 ====================== -->
+<div id="screen-summary" class="wrap hidden">
+  <div class="summary-head">
+    <h1>Resumo da avaliação — AvaliaBrux</h1>
+  </div>
+  <p class="summary-meta" id="summary-meta"></p>
+  <div class="summary-body" id="summary-body"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" id="btn-copy">Copiar resumo</button>
+    <button class="btn btn-ghost" id="btn-restart">Nova avaliação</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   Conjuntos de opções reutilizáveis
+========================================================= */
+const OPT = {
+  freqSono: ["Nenhuma vez","Menos que uma noite/mês","1–3 noites/mês","1–3 noites/semana","4–7 noites/semana","Não sei"],
+  freqVigilia: ["Nunca","Uma pequena parte do tempo","Alguma parte do tempo","A maior parte do tempo","O tempo todo","Não sei"],
+  simNaoNS: ["Sim","Não","Não sabe"],
+  simNao: ["Sim","Não"],
+  phq4: ["Nunca","Muitos dias","Mais da metade dos dias","Quase todos os dias"],
+  enfrent: ["Nunca","Raramente","Às vezes","Frequentemente","Sempre"],
+  brcs: ["Não me descreve de forma nenhuma","Não me descreve","Neutro","Me descreve","Me descreve muito bem"],
+  insonia: ["Nenhuma","Leve","Moderada","Grave","Muito grave"],
+  comport: ["Nunca","Raramente","Às vezes","Frequentemente","Sempre"],
+  ausPres: ["Ausente","Presente"],
+  hipertrofia: ["Ausente","Presente direito","Presente esquerdo","Presente bilateral"],
+  etiologia: ["Predominantemente mecânico","Predominantemente químico","Misto (mecânico e químico)"]
+};
+const SEXTANTES = ["S1","S2","S3","S4","S5","S6"];
+const SEXTANTES_LABEL = {
+  S1:"S1 (oclusal direito sup.)", S2:"S2 (incisal superior)", S3:"S3 (oclusal esquerdo sup.)",
+  S4:"S4 (oclusal esquerdo inf.)", S5:"S5 (incisal inferior)", S6:"S6 (oclusal direito inf.)"
+};
+
+/* =========================================================
+   Definição dos módulos (schema)
+========================================================= */
+const MODULES = {
+  anamnese: {
+    key:"anamnese", titulo:"Anamnese",
+    sections:[
+      { h:"A1 — Bruxismo do sono", fields:[
+        {id:"a1_1", type:"radio", q:"A1.1 — Com que frequência o paciente aperta os dentes durante o sono?", opts:OPT.freqSono},
+        {id:"a1_2", type:"radio", q:"A1.2 — Com que frequência o paciente range os dentes durante o sono?", opts:OPT.freqSono},
+        {id:"a1_hist", type:"textarea", q:"Histórico de bruxismo do sono", ph:"Descreva o histórico relevante relatado pelo paciente (ex.: início, evolução, relatos de parceiro)"}
+      ]},
+      { h:"A2 — Bruxismo em vigília", fields:[
+        {id:"a2_1", type:"radio", q:"A2.1 — Com que frequência o paciente range os dentes quando está acordado?", opts:OPT.freqVigilia},
+        {id:"a2_2", type:"radio", q:"A2.2 — Com que frequência o paciente aperta os dentes quando está acordado?", opts:OPT.freqVigilia},
+        {id:"a2_3", type:"radio", q:"A2.3 — Com que frequência o paciente aperta levemente, toca ou mantém os dentes em contato quando está acordado, exceto durante a mastigação?", opts:OPT.freqVigilia},
+        {id:"a2_4", type:"radio", q:"A2.4 — Com que frequência o paciente tensiona ou contrai os músculos mastigatórios quando está acordado, sem apertar ou encostar os dentes?", opts:OPT.freqVigilia},
+        {id:"a2_hist", type:"textarea", q:"Histórico de bruxismo em vigília", ph:"Descreva o histórico relevante relatado pelo paciente"}
+      ]},
+      { h:"A3 — Queixas do paciente", instruction:"Para cada item, registre: Sim / Não / Não sabe.", fields:[
+        ...[
+          ["a3_dtm","Dor ou disfunção temporomandibular"],
+          ["a3_rigidez","Dor ou rigidez ao acordar nos músculos da face ou mandíbula"],
+          ["a3_travamento","Sensação de travamento mandibular ao acordar"],
+          ["a3_mastig","Alteração da dor ou desconforto com atividades mastigatórias"],
+          ["a3_ruidos","Ruídos articulares (estalido ou crepitação)"],
+          ["a3_dor_manha","Dor muscular predominante pela manhã"],
+          ["a3_dor_noite","Dor muscular predominante à noite"],
+          ["a3_dor_outro","Dor muscular em qualquer outro momento do dia"],
+          ["a3_fad_manha","Fadiga muscular pela manhã"],
+          ["a3_fad_noite","Fadiga muscular à noite"],
+          ["a3_fad_outro","Fadiga muscular em qualquer outro momento do dia"],
+          ["a3_acordar","Sintomas ao acordar (dor, rigidez, fadiga)"],
+          ["a3_cefaleia","Cefaleia ao acordar"],
+          ["a3_desgaste","Desgaste dentário percebido pelo paciente"],
+          ["a3_zumbido","Zumbido (tinnitus)"],
+          ["a3_xerostomia","Xerostomia (boca seca)"],
+          ["a3_sialorreia","Sialorreia (excesso de saliva)"]
+        ].map(([id,label])=>({id,type:"radio",q:label,opts:OPT.simNaoNS,inline:true}))
+      ]}
+    ]
+  },
+
+  fatores: {
+    key:"fatores", titulo:"Fatores relacionados ao bruxismo",
+    sections:[
+      { h:"B1 — Avaliação psicossocial (PHQ-4)", instruction:"Durante as últimas 2 semanas, com que frequência o paciente foi incomodado pelos problemas abaixo?", fields:[
+        {id:"b1_1a",type:"radio",q:"B1.1a — Sentiu pouco interesse ou prazer em fazer as coisas",opts:OPT.phq4,inline:true},
+        {id:"b1_1b",type:"radio",q:"B1.1b — Se sentiu desanimado, deprimido ou sem esperança",opts:OPT.phq4,inline:true},
+        {id:"b1_1c",type:"radio",q:"B1.1c — Se sentiu nervoso, ansioso ou no limite",opts:OPT.phq4,inline:true},
+        {id:"b1_1d",type:"radio",q:"B1.1d — Não conseguiu parar ou controlar as preocupações",opts:OPT.phq4,inline:true},
+        {sub:"B1.2 — Enfrentamento (Brief Resilient Coping Scale)"},
+        {note:"Considere quão bem as seguintes afirmações descrevem o comportamento e as ações do paciente."},
+        {id:"b1_2a",type:"radio",q:"Eu procuro formas criativas de modificar situações difíceis.",opts:OPT.brcs,inline:true},
+        {id:"b1_2b",type:"radio",q:"Apesar do que acontece comigo, acredito que posso controlar minhas reações.",opts:OPT.brcs,inline:true},
+        {id:"b1_2c",type:"radio",q:"Acredito que posso crescer de forma positiva lidando com situações difíceis.",opts:OPT.brcs,inline:true},
+        {id:"b1_2d",type:"radio",q:"Eu busco ativamente formas de substituir as perdas que sofro na vida.",opts:OPT.brcs,inline:true}
+      ]},
+      { h:"B2 — Condições relacionadas ao sono", fields:[
+        {sub:"B2.1 — Triagem de apneia obstrutiva do sono (STOP-BANG)"},
+        {id:"b2_1a",type:"radio",q:"Ronca alto?",opts:OPT.simNao,inline:true},
+        {id:"b2_1b",type:"radio",q:"Sente-se frequentemente cansado, fatigado ou sonolento durante o dia?",opts:OPT.simNao,inline:true},
+        {id:"b2_1c",type:"radio",q:"Alguém observou que para de respirar durante o sono?",opts:OPT.simNao,inline:true},
+        {id:"b2_1d",type:"radio",q:"Tem ou faz tratamento para pressão alta?",opts:OPT.simNao,inline:true},
+        {id:"b2_1e",type:"radio",q:"IMC acima de 35?",opts:OPT.simNao,inline:true},
+        {id:"b2_1f",type:"radio",q:"Idade acima de 50 anos?",opts:OPT.simNao,inline:true},
+        {id:"b2_1g",type:"radio",q:"Circunferência do pescoço acima de 40 cm?",opts:OPT.simNao,inline:true},
+        {id:"b2_1h",type:"radio",q:"Sexo masculino?",opts:OPT.simNao,inline:true},
+        {sub:"B2.2 — Triagem de insônia"},
+        {id:"b2_2a",type:"radio",q:"Dificuldade em iniciar o sono",opts:OPT.insonia,inline:true},
+        {id:"b2_2b",type:"radio",q:"Dificuldade em manter o sono",opts:OPT.insonia,inline:true},
+        {id:"b2_2c",type:"radio",q:"Problema em acordar muito cedo",opts:OPT.insonia,inline:true},
+        {sub:"B2.3 — Movimentos periódicos de membros / síndrome das pernas inquietas"},
+        {id:"b2_3a",type:"radio",q:"O paciente sente necessidade irresistível de mover as pernas, especialmente à noite?",opts:OPT.simNaoNS,inline:true},
+        {id:"b2_3b",type:"radio",q:"O paciente apresenta movimentos involuntários das pernas durante o sono (relatado por parceiro)?",opts:OPT.simNaoNS,inline:true},
+        {sub:"B2.4 — Posição ao dormir"},
+        {id:"b2_4",type:"checkbox",q:"Selecione as posições habituais:",opts:["De lado (direito)","De lado (esquerdo)","De bruços","De costas","Varia / não sabe"]}
+      ]},
+      { h:"B3 — Comportamentos e condições não relacionados ao sono", fields:[
+        {sub:"B3.1 — Comportamentos orais em vigília"},
+        {note:"Com que frequência o paciente apresenta os seguintes comportamentos?"},
+        ...[
+          ["b3_1a","Aperta os dentes sem perceber"],
+          ["b3_1b","Range os dentes sem perceber"],
+          ["b3_1c","Mantém os dentes em contato sem perceber"],
+          ["b3_1d","Tensiona a mandíbula sem perceber"],
+          ["b3_1e","Morde a língua, bochechas ou lábios"],
+          ["b3_1f","Morde objetos (caneta, unhas, cutículas)"],
+          ["b3_1g","Mastiga chicletes"],
+          ["b3_1h","Segura ou aperta o telefone com o ombro/queixo"],
+          ["b3_1i","Faz esforço com a mandíbula em atividades físicas"],
+          ["b3_1j","Aperta os dentes ao usar telas (celular, computador)"],
+          ["b3_1k","Postura de cabeça projetada para frente habitualmente"],
+          ["b3_1l","Respira predominantemente pela boca"],
+          ["b3_1m","Dorme com a mandíbula apoiada na mão"]
+        ].map(([id,label])=>({id,type:"radio",q:label,opts:OPT.comport,inline:true})),
+        {sub:"B3.2 — Desordens motoras orofaciais"},
+        ...[
+          ["b3_2a","Discinesia orofacial"],["b3_2b","Distonia oromandibular"],
+          ["b3_2c","Tique orofacial"],["b3_2d","Tremor oromandibular"]
+        ].map(([id,label])=>({id,type:"radio",q:label,opts:OPT.simNaoNS,inline:true})),
+        {sub:"B3.3 — Doença do refluxo gastroesofágico (DRGE)"},
+        {id:"b3_3a",type:"radio",q:"O paciente tem diagnóstico de DRGE?",opts:OPT.simNaoNS,inline:true},
+        {id:"b3_3b",type:"radio",q:"O paciente refere azia ou regurgitação frequente?",opts:OPT.simNaoNS,inline:true},
+        {sub:"B3.4 — Outras condições sistêmicas"},
+        {id:"b3_4a",type:"radio",q:"Desordem autoimune ou do tecido conjuntivo",opts:OPT.simNaoNS,inline:true},
+        {id:"b3_4b",type:"radio",q:"TDAH (diagnóstico confirmado)",opts:OPT.simNaoNS,inline:true},
+        {id:"b3_4c",type:"radio",q:"Transtorno do espectro autista",opts:OPT.simNaoNS,inline:true}
+      ]},
+      { h:"B4 — Medicações e substâncias", instruction:"Quando \"Sim\", utilize o campo para especificar.", fields:[
+        {id:"b4_drogas",type:"radioSpec",q:"Uso de drogas recreativas",opts:OPT.simNaoNS,specLabel:"Especificar",specType:"text"},
+        {id:"b4_medic",type:"radioSpec",q:"Uso de medicações prescritas",opts:OPT.simNaoNS,specLabel:"Especificar",specType:"text"},
+        {id:"b4_tabaco",type:"radioSpec",q:"Tabagismo",opts:OPT.simNaoNS,specLabel:"Cigarros por dia",specType:"number"},
+        {id:"b4_alcool",type:"radioSpec",q:"Consumo de álcool",opts:OPT.simNaoNS,specLabel:"Doses por semana",specType:"number"},
+        {id:"b4_refri",type:"radioSpec",q:"Consumo de refrigerantes",opts:OPT.simNaoNS,specLabel:"Frequência",specType:"text"},
+        {id:"b4_citricos",type:"radioSpec",q:"Consumo de sucos ou frutas cítricas",opts:OPT.simNaoNS,specLabel:"Frequência",specType:"text"},
+        {id:"b4_cafeina",type:"radioSpec",q:"Consumo de cafeína (café, chá, energéticos)",opts:OPT.simNaoNS,specLabel:"Doses por dia",specType:"number"}
+      ]},
+      { h:"B5 — Histórico familiar", fields:[
+        ...[
+          ["b5_brux","Familiar com bruxismo"],
+          ["b5_desgaste","Familiar com desgaste dentário acentuado"],
+          ["b5_aos","Familiar com apneia obstrutiva do sono"],
+          ["b5_dor","Familiar com dor orofacial crônica"],
+          ["b5_drge","Familiar com DRGE"]
+        ].map(([id,label])=>({id,type:"radio",q:label,opts:OPT.simNaoNS,inline:true}))
+      ]}
+    ]
+  },
+
+  exameSimples: {
+    key:"exameSimples", titulo:"Exame físico simples (BruxScreen-C)",
+    sections:[
+      { h:"1 — Avaliação extraoral", fields:[
+        {id:"es_hip_relax",type:"radio",q:"Hipertrofia dos músculos masseteres — observada com os músculos RELAXADOS",opts:OPT.ausPres,inline:true},
+        {id:"es_hip_contr",type:"radio",q:"Hipertrofia dos músculos masseteres — observada com os músculos CONTRAÍDOS",opts:OPT.ausPres,inline:true}
+      ]},
+      { h:"2 — Avaliação intraoral — tecidos não dentários", fields:[
+        ...[
+          ["es_labios","Marcações nos lábios"],["es_bochechas","Marcações nas bochechas"],
+          ["es_indent","Indentações na língua"],["es_lesoes","Lesões traumáticas na língua"],
+          ["es_exostose","Exostoses ósseas alveolares / tórus"]
+        ].map(([id,label])=>({id,type:"radio",q:label,opts:OPT.ausPres,inline:true}))
+      ]},
+      { h:"3 — Avaliação intraoral — tecidos dentários", fields:[
+        {id:"es_sextant",type:"sextants",q:"Desgaste incisal/oclusal por sextante",scaleMax:4,
+          legend:"0 = Sem desgaste visível · 1 = Restrito ao esmalte · 2 = Exposição de dentina, perda até 1/3 da coroa · 3 = Perda > 1/3 e < 2/3 · 4 = Perda ≥ 2/3"},
+        {id:"es_palatino",type:"radio",q:"Desgaste palatino — sextante 2 (incisivos superiores)",opts:["0 = Sem desgaste visível","1 = Desgaste limitado ao esmalte","2 = Desgaste atingindo a dentina"]},
+        {id:"es_etiologia",type:"radio",q:"Etiologia do desgaste dentário observado",opts:OPT.etiologia}
+      ]}
+    ]
+  },
+
+  exameCompleto: {
+    key:"exameCompleto", titulo:"Exame físico completo (STAB A4–A6)",
+    sections:[
+      { h:"A4 — Articulações e músculos", fields:[
+        {id:"ec_dtm",type:"checkbox",q:"A4.1 — Diagnóstico de DTM dolorosa (múltipla seleção)",opts:[
+          "Mialgia local","Dor miofascial","Dor miofascial com referência","Cefaleia atribuída à DTM",
+          "Artralgia direita","Artralgia esquerda","Artrite direita","Artrite esquerda","Nenhuma DTM dolorosa identificada"]},
+        {id:"ec_hip",type:"checkbox",q:"A4.2 — Hipertrofia de masseter (marque os lados presentes)",opts:["Esquerdo","Direito"]}
+      ]},
+      { h:"A5 — Tecidos intra e extraorais", fields:[
+        ...[
+          ["ec_labios","Marcações nos lábios"],["ec_bochechas","Marcações nas bochechas"],
+          ["ec_indent","Indentações na língua"],["ec_lesoes","Lesões traumáticas na língua"],
+          ["ec_exostose","Exostoses ósseas alveolares / tórus"]
+        ].map(([id,label])=>({id,type:"radio",q:label,opts:OPT.ausPres,inline:true})),
+        {id:"ec_friedman",type:"select",q:"Posição de língua de Friedman",opts:["Classe I","Classe II","Classe III","Classe IV"]}
+      ]},
+      { h:"A6.1 — Triagem de desgaste dentário", fields:[
+        {id:"ec_sextant",type:"sextants",q:"Desgaste incisal/oclusal por sextante",scaleMax:4,
+          legend:"0 = Sem desgaste visível · 1 = Restrito ao esmalte · 2 = Exposição de dentina, perda até 1/3 da coroa · 3 = Perda > 1/3 e < 2/3 · 4 = Perda ≥ 2/3"},
+        {id:"ec_palatino",type:"radio",q:"Desgaste palatino — sextante 2",opts:["0 = Sem desgaste visível","1 = Desgaste limitado ao esmalte","2 = Desgaste atingindo a dentina"]},
+        {id:"ec_etiologia",type:"radio",q:"Etiologia do desgaste",opts:OPT.etiologia}
+      ]},
+      { h:"A6.1.1 — Sinais clínicos de fatores mecânicos", instruction:"Preencher se desgaste de grau ≥ 2 for detectado. Marque os sinais presentes:", fields:[
+        {id:"ec_mecanicos",type:"checkbox",q:"Sinais clínicos indicando influência de fatores mecânicos:",opts:[
+          "Facetas brilhantes, planas e polidas",
+          "Desgastes no esmalte e dentina na mesma proporção",
+          "Desgastes coincidentes entre dentes antagonistas",
+          "Fraturas de cúspides e restaurações",
+          "Impressões em bochechas, língua e/ou lábios",
+          "Lesões cervicais não cariosas (LCNC)",
+          "Lesões vestibulares/cervicais amplas",
+          "Áreas cervicais de pré-molares e caninos afetadas",
+          "Trincas no esmalte",
+          "Tórus mandibular"
+        ]}
+      ]},
+      { h:"A6.2 — Exame dental e periodontal por sextante", fields:[
+        {id:"ec_a62",type:"matrix",q:"Para cada sextante, registre Ausente / Presente:",rows:[
+          ["ec_a62_hsd","Hipersensibilidade dentinária"],
+          ["ec_a62_perc","Desconforto à percussão"],
+          ["ec_a62_frat","Dentes fraturados"],
+          ["ec_a62_mob","Mobilidade dentária aumentada"]
+        ],opts:OPT.ausPres}
+      ]},
+      { h:"A6.3 — Restaurações por sextante", fields:[
+        {id:"ec_a63",type:"matrix",q:"Para cada sextante, registre Ausente / Presente:",rows:[
+          ["ec_a63_perd","Restaurações perdidas ou fraturadas"],
+          ["ec_a63_desg","Restaurações com desgaste"],
+          ["ec_a63_cer","Fratura de cerâmica"],
+          ["ec_a63_impl","Complicações em implantes"]
+        ],opts:OPT.ausPres}
+      ]},
+      { h:"A6.4 — Avaliação de dispositivo oral (placa de resina)", fields:[
+        {id:"ec_usa_placa",type:"radio",q:"O paciente utiliza dispositivo oral (placa de resina)?",opts:OPT.simNao,inline:true,gate:"ec_placa_group"},
+        {groupId:"ec_placa_group",hiddenUnless:{id:"ec_usa_placa",value:"Sim"},fields:[
+          {id:"ec_placa_atrito",type:"radio",q:"Marcas de atrito na placa",opts:OPT.ausPres,inline:true},
+          {id:"ec_placa_apert",type:"radio",q:"Marcas de apertamento na placa",opts:OPT.ausPres,inline:true},
+          {id:"ec_placa_frat",type:"radio",q:"Fraturas na placa",opts:OPT.ausPres,inline:true}
+        ]}
+      ]}
+    ]
+  }
+};
+
+/* Cards exibidos na home (ordem e textos) */
+const CARD_DEFS = [
+  {key:"anamnese", titulo:"Anamnese", desc:"Autorrelato de bruxismo do sono, vigília e queixas associadas", locked:true},
+  {key:"fatores", titulo:"Fatores relacionados ao bruxismo", desc:"Avaliação psicossocial, sono, comportamentos orais, medicações e histórico familiar"},
+  {key:"exameSimples", titulo:"Exame físico simples", desc:"Avaliação clínica baseada no BruxScreen"},
+  {key:"exameCompleto", titulo:"Exame físico completo", desc:"Avaliação clínica detalhada baseada no STAB"}
+];
+const ORDER = ["anamnese","fatores","exameSimples","exameCompleto"];
+
+/* =========================================================
+   Estado de seleção (Tela 1)
+========================================================= */
+const selected = new Set(["anamnese"]);
+
+function renderCards(){
+  const c = document.getElementById("modules");
+  c.innerHTML = "";
+  CARD_DEFS.forEach(def=>{
+    const card = document.createElement("div");
+    card.className = "mod-card" + (selected.has(def.key)?" selected":"") + (def.locked?" disabled":"");
+    card.innerHTML = `<span class="check"></span>
+      <h3>${def.titulo}</h3><p>${def.desc}</p>` +
+      (def.locked?`<span class="locked-tag">Sempre incluído</span>`:``);
+    if(!def.locked){
+      card.addEventListener("click",()=>toggleModule(def.key));
+    }
+    c.appendChild(card);
+  });
+}
+
+function toggleModule(key){
+  if(selected.has(key)){
+    selected.delete(key);
+  } else {
+    selected.add(key);
+    // exclusividade exames físicos
+    if(key==="exameSimples" && selected.has("exameCompleto")) selected.delete("exameCompleto");
+    if(key==="exameCompleto" && selected.has("exameSimples")) selected.delete("exameSimples");
+  }
+  const warn = document.getElementById("exclusive-warn");
+  warn.textContent = (selected.has("exameSimples") || selected.has("exameCompleto"))
+    ? "Selecione apenas um tipo de exame físico." : "";
+  renderCards();
+}
+
+/* =========================================================
+   Tela 2 — renderização do formulário
+========================================================= */
+let steps = [];      // lista de chaves de módulo selecionadas, na ordem
+let stepIndex = 0;
+
+function buildField(f){
+  // estruturas auxiliares
+  if(f.sub){ return `<div class="subgroup"><h4>${f.sub}</h4></div>`; }
+  if(f.note){ return `<p class="sec-instruction">${f.note}</p>`; }
+
+  if(f.type==="radio" || f.type==="checkbox"){
+    const inputType = f.type==="checkbox" ? "checkbox" : "radio";
+    const opts = f.opts.map((o,i)=>{
+      const oid = `${f.id}_${i}`;
+      return `<label for="${oid}"><input type="${inputType}" id="${oid}" name="${f.id}" value="${esc(o)}">${esc(o)}</label>`;
+    }).join("");
+    const gate = f.gate ? ` data-gate="${f.gate}"` : "";
+    return `<div class="field"><label class="q">${esc(f.q)}</label><div class="options"${gate}>${opts}</div></div>`;
+  }
+
+  if(f.type==="radioSpec"){
+    const opts = f.opts.map((o,i)=>{
+      const oid = `${f.id}_${i}`;
+      return `<label for="${oid}"><input type="radio" id="${oid}" name="${f.id}" value="${esc(o)}" data-spec="${f.id}_spec">${esc(o)}</label>`;
+    }).join("");
+    return `<div class="field"><label class="q">${esc(f.q)}</label><div class="options">${opts}</div>
+      <div class="spec-field hidden" id="${f.id}_spec_wrap">
+        <label for="${f.id}_spec">${esc(f.specLabel)}</label>
+        <input type="${f.specType}" id="${f.id}_spec" name="${f.id}_spec">
+      </div></div>`;
+  }
+
+  if(f.type==="textarea"){
+    return `<div class="field"><label class="q" for="${f.id}">${esc(f.q)}</label>
+      <textarea id="${f.id}" name="${f.id}" placeholder="${esc(f.ph||"")}"></textarea></div>`;
+  }
+
+  if(f.type==="select"){
+    const opts = `<option value="">—</option>` + f.opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("");
+    return `<div class="field"><label class="q" for="${f.id}">${esc(f.q)}</label>
+      <select id="${f.id}" name="${f.id}" style="font-size:16px;padding:10px 12px;border:1px solid var(--linha);border-radius:4px;background:#fff;">${opts}</select></div>`;
+  }
+
+  if(f.type==="sextants"){
+    const cells = SEXTANTES.map(sx=>{
+      const scale = [];
+      for(let v=0; v<=f.scaleMax; v++){
+        const oid = `${f.id}_${sx}_${v}`;
+        scale.push(`<label for="${oid}"><input type="radio" id="${oid}" name="${f.id}_${sx}" value="${v}">${v}</label>`);
+      }
+      return `<div class="sextant-cell"><div class="sx-name">${esc(SEXTANTES_LABEL[sx])}</div><div class="scale-row">${scale.join("")}</div></div>`;
+    }).join("");
+    return `<div class="field"><label class="q">${esc(f.q)}</label>
+      <div class="sextant-grid">${cells}</div>
+      <p class="scale-legend">${esc(f.legend)}</p></div>`;
+  }
+
+  if(f.type==="matrix"){
+    const head = `<tr><th>Item</th>${SEXTANTES.map(s=>`<th>${s}</th>`).join("")}</tr>`;
+    const body = f.rows.map(([rid,rlabel])=>{
+      const tds = SEXTANTES.map(sx=>{
+        const name = `${rid}_${sx}`;
+        const opts = f.opts.map((o,i)=>{
+          const oid = `${name}_${i}`;
+          return `<label for="${oid}" title="${esc(o)}"><input type="radio" id="${oid}" name="${name}" value="${esc(o)}">${o.charAt(0)}</label>`;
+        }).join("");
+        return `<td><div class="cellopts">${opts}</div></td>`;
+      }).join("");
+      return `<tr><td>${esc(rlabel)}</td>${tds}</tr>`;
+    }).join("");
+    return `<div class="field"><label class="q">${esc(f.q)}</label>
+      <div class="matrix"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
+      <p class="scale-legend">A = Ausente · P = Presente</p></div>`;
+  }
+
+  if(f.groupId){
+    const inner = f.fields.map(buildField).join("");
+    return `<div class="spec-field hidden subgroup" id="${f.groupId}" data-hidden-unless='${JSON.stringify(f.hiddenUnless)}'>${inner}</div>`;
+  }
+  return "";
+}
+
+function renderModule(key){
+  const mod = MODULES[key];
+  let html = `<h2 class="module-title">${esc(mod.titulo)}</h2>`;
+  mod.sections.forEach(sec=>{
+    html += `<div class="section"><h3>${esc(sec.h)}</h3>`;
+    if(sec.instruction) html += `<p class="sec-instruction">${esc(sec.instruction)}</p>`;
+    sec.fields.forEach(f=>{ html += buildField(f); });
+    html += `</div>`;
+  });
+  // Observações gerais somente no último módulo
+  if(key === steps[steps.length-1]){
+    html += `<div class="section"><h3>Observações gerais</h3>
+      <div class="field"><textarea id="obs_gerais" name="obs_gerais"
+        placeholder="Inclua aqui dados de avaliação instrumental (EMG, PSG, sensor de movimento) ou outras informações relevantes não cobertas pelos módulos acima."></textarea></div></div>`;
+  }
+  return html;
+}
+
+function showStep(i){
+  stepIndex = i;
+  const key = steps[i];
+  const content = document.getElementById("form-content");
+  content.innerHTML = renderModule(key);
+  restoreValues();
+  attachDynamic();
+
+  document.getElementById("progress-head").textContent =
+    `${i+1} de ${steps.length} — ${MODULES[key].titulo}`;
+  document.getElementById("progress-fill").style.width = `${((i+1)/steps.length)*100}%`;
+
+  const prev = document.getElementById("btn-prev");
+  const next = document.getElementById("btn-next");
+  prev.style.visibility = i===0 ? "hidden" : "visible";
+  next.textContent = i===steps.length-1 ? "Concluir avaliação" : "Próximo";
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+/* mostra/oculta campos condicionais (radioSpec e grupos) */
+function attachDynamic(){
+  // radioSpec
+  document.querySelectorAll('input[data-spec]').forEach(inp=>{
+    inp.addEventListener("change",()=>{
+      const wrap = document.getElementById(inp.dataset.spec+"_wrap");
+      if(!wrap) return;
+      wrap.classList.toggle("hidden", inp.value!=="Sim");
+    });
+  });
+  // grupos condicionais (placa)
+  document.querySelectorAll('[data-hidden-unless]').forEach(group=>{
+    const cond = JSON.parse(group.dataset.hiddenUnless);
+    document.querySelectorAll(`input[name="${cond.id}"]`).forEach(inp=>{
+      inp.addEventListener("change",()=>{
+        const v = getR(cond.id);
+        group.classList.toggle("hidden", v!==cond.value);
+      });
+    });
+  });
+}
+
+/* =========================================================
+   Persistência em memória (state) entre navegações
+========================================================= */
+const STATE = {};
+function saveValues(){
+  document.querySelectorAll('#form-content input, #form-content textarea, #form-content select').forEach(el=>{
+    if(el.type==="radio" || el.type==="checkbox"){
+      if(el.checked){
+        if(el.type==="checkbox"){ (STATE[el.name] = STATE[el.name]||[]); if(!STATE[el.name].includes(el.value)) STATE[el.name].push(el.value); }
+        else STATE[el.name] = el.value;
+      } else if(el.type==="checkbox" && STATE[el.name]){
+        STATE[el.name] = STATE[el.name].filter(v=>v!==el.value);
+        if(!STATE[el.name].length) delete STATE[el.name];
+      }
+    } else {
+      if(el.value!=="") STATE[el.name]=el.value; else delete STATE[el.name];
+    }
+  });
+}
+function restoreValues(){
+  document.querySelectorAll('#form-content input, #form-content textarea, #form-content select').forEach(el=>{
+    const v = STATE[el.name];
+    if(v===undefined) return;
+    if(el.type==="radio"){ el.checked = (el.value===v); }
+    else if(el.type==="checkbox"){ el.checked = Array.isArray(v) && v.includes(el.value); }
+    else { el.value = v; }
+    // disparar dependências visuais
+    if(el.checked && el.dataset.spec){
+      const wrap = document.getElementById(el.dataset.spec+"_wrap");
+      if(wrap) wrap.classList.toggle("hidden", el.value!=="Sim");
+    }
+  });
+  // grupos condicionais
+  document.querySelectorAll('[data-hidden-unless]').forEach(group=>{
+    const cond = JSON.parse(group.dataset.hiddenUnless);
+    group.classList.toggle("hidden", STATE[cond.id]!==cond.value);
+  });
+}
+
+/* =========================================================
+   Helpers de leitura para o resumo
+========================================================= */
+function getR(id){ return STATE[id]!==undefined && !Array.isArray(STATE[id]) ? STATE[id] : (STATE[id]||null); }
+function getC(id){ return Array.isArray(STATE[id]) ? STATE[id] : []; }
+function getT(id){ const v = STATE[id]; return (typeof v==="string") ? v.trim() : ""; }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* remove parênteses explicativos de uma frequência: "Às vezes (1 a 3...)" -> "às vezes" */
+function freqShort(v){
+  if(!v) return "";
+  return v.replace(/\s*\(.*?\)\s*/,"").trim();
+}
+
+/* =========================================================
+   Geração do resumo narrativo
+========================================================= */
+function buildSummary(){
+  const parts = [];
+
+  /* ---- Seção 1: Bruxismo do sono ---- */
+  if(steps.includes("anamnese")){
+    const s = [];
+    const a11=getR("a1_1"), a12=getR("a1_2");
+    s.push(...freqSentence("apertamento durante o sono", a11));
+    s.push(...freqSentence("ranger noturno", a12));
+    const hist = getT("a1_hist");
+    if(hist) s.push(`Histórico relatado: ${hist}`);
+    if(s.length) parts.push(["Bruxismo do sono (autorrelato)", s.join(" ")]);
+
+    /* ---- Seção 2: Bruxismo em vigília ---- */
+    const v = [];
+    v.push(...freqSentence("ranger dentário em vigília", getR("a2_1")));
+    v.push(...freqSentence("apertamento dentário em vigília", getR("a2_2")));
+    v.push(...freqSentence("contato dentário habitual (toque leve) em vigília", getR("a2_3")));
+    v.push(...freqSentence("tensão dos músculos mastigatórios sem contato dentário", getR("a2_4")));
+    const vhist = getT("a2_hist");
+    if(vhist) v.push(`Histórico relatado: ${vhist}`);
+    if(v.length) parts.push(["Bruxismo em vigília (autorrelato)", v.join(" ")]);
+
+    /* ---- Seção 3: Queixas ---- */
+    const queixaMap = [
+      ["a3_dtm","dor ou disfunção temporomandibular"],
+      ["a3_rigidez","dor ou rigidez ao acordar na face/mandíbula"],
+      ["a3_travamento","travamento mandibular ao acordar"],
+      ["a3_mastig","alteração da dor com atividades mastigatórias"],
+      ["a3_ruidos","ruídos articulares"],
+      ["a3_dor_manha","dor muscular predominante pela manhã"],
+      ["a3_dor_noite","dor muscular predominante à noite"],
+      ["a3_dor_outro","dor muscular em outro momento do dia"],
+      ["a3_fad_manha","fadiga muscular pela manhã"],
+      ["a3_fad_noite","fadiga muscular à noite"],
+      ["a3_fad_outro","fadiga muscular em outro momento do dia"],
+      ["a3_acordar","sintomas ao acordar (dor, rigidez, fadiga)"],
+      ["a3_cefaleia","cefaleia ao acordar"],
+      ["a3_desgaste","desgaste dentário percebido"],
+      ["a3_zumbido","zumbido"],
+      ["a3_xerostomia","xerostomia"],
+      ["a3_sialorreia","sialorreia"]
+    ];
+    const sim=[], nao=[];
+    queixaMap.forEach(([id,label])=>{
+      const v=getR(id);
+      if(v==="Sim") sim.push(label);
+      else if(v==="Não") nao.push(label);
+    });
+    const q=[];
+    if(sim.length) q.push(`O paciente refere: ${sim.join(", ")}.`);
+    if(nao.length) q.push(`Nega: ${nao.join(", ")}.`);
+    if(q.length) parts.push(["Queixas relatadas", q.join(" ")]);
+  }
+
+  /* ---- Seção 4: Fatores ---- */
+  if(steps.includes("fatores")){
+    const f=[];
+
+    // PHQ-4
+    const phqItems=[["b1_1a","interesse/prazer"],["b1_1b","desânimo/depressão"],["b1_1c","nervosismo/ansiedade"],["b1_1d","preocupações incontroláveis"]];
+    const phqScore = phqScoreSum(["b1_1a","b1_1b","b1_1c","b1_1d"]);
+    const deprScore = phqScoreSum(["b1_1a","b1_1b"]);
+    const ansScore = phqScoreSum(["b1_1c","b1_1d"]);
+    if(phqScore.answered){
+      let txt = `PHQ-4: pontuação total ${phqScore.sum}/12 (subescala de depressão ${deprScore.sum}/6; ansiedade ${ansScore.sum}/6).`;
+      if(deprScore.sum>=3) txt+=" Triagem de depressão positiva.";
+      if(ansScore.sum>=3) txt+=" Triagem de ansiedade positiva.";
+      f.push(txt);
+    }
+
+    // Enfrentamento (Brief Resilient Coping Scale: 4 itens, 1–5; total 4–20)
+    const brcsIds=["b1_2a","b1_2b","b1_2c","b1_2d"];
+    let brcsSum=0, brcsAns=0;
+    brcsIds.forEach(id=>{ const v=getR(id); if(v){ brcsAns++; brcsSum += OPT.brcs.indexOf(v)+1; }});
+    if(brcsAns===4){
+      const cls = brcsSum<=13?"baixa resiliência ao enfrentamento":(brcsSum<=16?"resiliência moderada ao enfrentamento":"alta resiliência ao enfrentamento");
+      f.push(`Enfrentamento (BRCS): ${brcsSum}/20 — ${cls}.`);
+    } else if(brcsAns>0){
+      f.push(`Enfrentamento (BRCS): preenchimento parcial (${brcsAns}/4 itens; soma parcial ${brcsSum}).`);
+    }
+
+    // STOP-BANG
+    const sbIds=["b2_1a","b2_1b","b2_1c","b2_1d","b2_1e","b2_1f","b2_1g","b2_1h"];
+    let sbAnswered=false, sbSum=0;
+    sbIds.forEach(id=>{ const v=getR(id); if(v){ sbAnswered=true; if(v==="Sim") sbSum++; }});
+    if(sbAnswered){
+      let risco = sbSum>=5?"risco alto":(sbSum>=3?"risco moderado a alto":"risco baixo");
+      f.push(`STOP-BANG: ${sbSum}/8 itens positivos — ${risco} de apneia obstrutiva do sono.`);
+    }
+
+    // Insônia
+    const ins=[];
+    [["b2_2a","iniciar o sono"],["b2_2b","manter o sono"],["b2_2c","despertar precoce"]]
+      .forEach(([id,label])=>{ const v=getR(id); if(v && v!=="Nenhuma") ins.push(`${label} (${v.toLowerCase()})`); });
+    if(ins.length) f.push(`Insônia — queixas: ${ins.join(", ")}.`);
+
+    // SPI/PLM
+    const plm=[];
+    if(getR("b2_3a")==="Sim") plm.push("necessidade irresistível de mover as pernas");
+    if(getR("b2_3b")==="Sim") plm.push("movimentos involuntários das pernas no sono");
+    if(plm.length) f.push(`Sinais de SPI/PLM: ${plm.join(", ")}.`);
+
+    // Posição
+    const pos=getC("b2_4");
+    if(pos.length) f.push(`Posição ao dormir: ${pos.join(", ")}.`);
+
+    // Comportamentos orais
+    const compMap=[
+      ["b3_1a","apertar dentes sem perceber"],["b3_1b","ranger dentes sem perceber"],["b3_1c","manter dentes em contato"],
+      ["b3_1d","tensionar a mandíbula"],["b3_1e","morder língua/bochechas/lábios"],["b3_1f","morder objetos"],
+      ["b3_1g","mascar chiclete"],["b3_1h","apoiar telefone no ombro/queixo"],["b3_1i","esforço mandibular em atividade física"],
+      ["b3_1j","apertar dentes ao usar telas"],["b3_1k","cabeça projetada para frente"],["b3_1l","respiração predominantemente bucal"],
+      ["b3_1m","dormir com mandíbula apoiada na mão"]
+    ];
+    const comp=[];
+    compMap.forEach(([id,label])=>{ const v=getR(id); if(v && ["Frequentemente","Sempre"].includes(v)) comp.push(`${label} (${v.toLowerCase()})`); });
+    if(comp.length) f.push(`Comportamentos orais frequentes: ${comp.join(", ")}.`);
+
+    // Desordens motoras
+    const mot=positives([["b3_2a","discinesia orofacial"],["b3_2b","distonia oromandibular"],["b3_2c","tique orofacial"],["b3_2d","tremor oromandibular"]]);
+    if(mot.length) f.push(`Desordens motoras orofaciais presentes: ${mot.join(", ")}.`);
+
+    // DRGE
+    const drge=[];
+    if(getR("b3_3a")==="Sim") drge.push("diagnóstico de DRGE");
+    if(getR("b3_3b")==="Sim") drge.push("azia/regurgitação frequente");
+    if(drge.length) f.push(`DRGE: ${drge.join(", ")}.`);
+
+    // Sistêmicas
+    const sis=positives([["b3_4a","desordem autoimune/tecido conjuntivo"],["b3_4b","TDAH"],["b3_4c","transtorno do espectro autista"]]);
+    if(sis.length) f.push(`Condições sistêmicas: ${sis.join(", ")}.`);
+
+    // Substâncias B4
+    const subs=[];
+    const subMap=[
+      ["b4_drogas","drogas recreativas"],["b4_medic","medicações prescritas"],["b4_tabaco","tabagismo"],
+      ["b4_alcool","consumo de álcool"],["b4_refri","consumo de refrigerantes"],["b4_citricos","sucos/frutas cítricas"],
+      ["b4_cafeina","cafeína"]
+    ];
+    subMap.forEach(([id,label])=>{
+      if(getR(id)==="Sim"){
+        const spec=getT(id+"_spec");
+        subs.push(spec ? `${label} (${spec})` : label);
+      }
+    });
+    if(subs.length) f.push(`Substâncias/medicações: ${subs.join(", ")}.`);
+
+    // Histórico familiar
+    const fam=positives([["b5_brux","bruxismo"],["b5_desgaste","desgaste dentário acentuado"],["b5_aos","apneia obstrutiva do sono"],["b5_dor","dor orofacial crônica"],["b5_drge","DRGE"]]);
+    if(fam.length) f.push(`Histórico familiar positivo para: ${fam.join(", ")}.`);
+
+    if(f.length) parts.push(["Fatores relacionados ao bruxismo", f.join(" ")]);
+  }
+
+  /* ---- Seção 5: Exame físico ---- */
+  if(steps.includes("exameSimples")){
+    const e=examNarrative("es");
+    if(e.length) parts.push(["Exame físico simples (BruxScreen-C)", e.join(" ")]);
+  }
+  if(steps.includes("exameCompleto")){
+    const e=examCompletoNarrative();
+    if(e.length) parts.push(["Exame físico completo (STAB)", e.join(" ")]);
+  }
+
+  /* ---- Observações ---- */
+  const obs=getT("obs_gerais");
+  if(obs) parts.push(["Observações gerais", `Observações: ${obs}`]);
+
+  return parts;
+}
+
+function freqSentence(label, v){
+  if(!v) return [];
+  if(v==="Nunca" || v==="Nenhuma vez") return [`Nega ${label}.`];
+  if(v==="Não sei" || v==="Não sabe") return [`Não sabe informar sobre ${label}.`];
+  return [`Relata ${label} (${v.toLowerCase()}).`];
+}
+function positives(map){
+  const out=[];
+  map.forEach(([id,label])=>{ if(getR(id)==="Sim") out.push(label); });
+  return out;
+}
+function presents(map){
+  const out=[];
+  map.forEach(([id,label])=>{ if(getR(id)==="Presente") out.push(label); });
+  return out;
+}
+function phqScoreSum(ids){
+  let sum=0, answered=false;
+  ids.forEach(id=>{
+    const v=getR(id);
+    if(v){ answered=true; sum += OPT.phq4.indexOf(v); }
+  });
+  return {sum, answered};
+}
+function sextantNarrative(prefixId){
+  const found=[];
+  SEXTANTES.forEach(sx=>{
+    const v=getR(`${prefixId}_${sx}`);
+    if(v!==null && v!==undefined && v!=="" && v!=="0") found.push(`${sx} grau ${v}`);
+  });
+  return found;
+}
+
+function examNarrative(p){
+  const e=[];
+  // hipertrofia (es) — Ausente / Presente
+  if(getR(p+"_hip_relax")==="Presente") e.push("Hipertrofia de masseter observada em repouso.");
+  if(getR(p+"_hip_contr")==="Presente") e.push("Hipertrofia de masseter observada à contração.");
+  // tecidos não dentários
+  const tec=presents([
+    [p+"_labios","marcações nos lábios"],[p+"_bochechas","marcações nas bochechas"],
+    [p+"_indent","indentações na língua"],[p+"_lesoes","lesões traumáticas na língua"],
+    [p+"_exostose","exostoses/tórus"]
+  ]);
+  if(tec.length) e.push(`Achados intraorais em tecidos moles: ${tec.join(", ")}.`);
+  // desgaste sextantes
+  const sx=sextantNarrative(p+"_sextant");
+  if(sx.length) e.push(`Desgaste incisal/oclusal: ${sx.join(", ")}.`);
+  const pal=getR(p+"_palatino");
+  if(pal && pal.charAt(0)!=="0") e.push(`Desgaste palatino (sextante 2): grau ${pal.charAt(0)}.`);
+  const eti=getR(p+"_etiologia");
+  if(eti && eti!=="Não avaliado") e.push(`Etiologia do desgaste: ${eti.toLowerCase()}.`);
+  return e;
+}
+
+function examCompletoNarrative(){
+  const e=[];
+  // DTM
+  const dtm=getC("ec_dtm").filter(x=>x!=="Nenhuma DTM dolorosa identificada");
+  if(getC("ec_dtm").includes("Nenhuma DTM dolorosa identificada")) e.push("Nenhuma DTM dolorosa identificada.");
+  if(dtm.length) e.push(`Diagnóstico(s) de DTM dolorosa: ${dtm.join(", ")}.`);
+  const hip=getC("ec_hip");
+  if(hip.length) e.push(`Hipertrofia de masseter: lado ${hip.length>1?"bilateral":hip[0].toLowerCase()}.`);
+  // tecidos A5
+  const tec=presents([
+    ["ec_labios","marcações nos lábios"],["ec_bochechas","marcações nas bochechas"],
+    ["ec_indent","indentações na língua"],["ec_lesoes","lesões traumáticas na língua"],
+    ["ec_exostose","exostoses/tórus"]
+  ]);
+  if(tec.length) e.push(`Tecidos intra/extraorais: ${tec.join(", ")}.`);
+  const fried=getR("ec_friedman");
+  if(fried) e.push(`Posição de língua de Friedman: ${fried}.`);
+  // A6.1
+  const sx=sextantNarrative("ec_sextant");
+  if(sx.length) e.push(`Desgaste incisal/oclusal: ${sx.join(", ")}.`);
+  const pal=getR("ec_palatino");
+  if(pal && pal.charAt(0)!=="0") e.push(`Desgaste palatino (sextante 2): grau ${pal.charAt(0)}.`);
+  const eti=getR("ec_etiologia");
+  if(eti && eti!=="Não avaliado") e.push(`Etiologia do desgaste: ${eti.toLowerCase()}.`);
+  // A6.1.1 sinais mecânicos (10 itens STAB; marque presentes)
+  const mec=getC("ec_mecanicos");
+  if(mec.length) e.push(`Sinais de fatores mecânicos: ${mec.join("; ")}.`);
+  // A6.2 matriz
+  const m62=matrixPresents("ec_a62",[
+    ["ec_a62_hsd","hipersensibilidade dentinária"],["ec_a62_perc","desconforto à percussão"],
+    ["ec_a62_frat","dentes fraturados"],["ec_a62_mob","mobilidade aumentada"]
+  ]);
+  if(m62.length) e.push(`Exame dental/periodontal: ${m62.join("; ")}.`);
+  // A6.3 matriz
+  const m63=matrixPresents("ec_a63",[
+    ["ec_a63_perd","restaurações perdidas/fraturadas"],["ec_a63_desg","restaurações com desgaste"],
+    ["ec_a63_cer","fratura de cerâmica"],["ec_a63_impl","complicações em implantes"]
+  ]);
+  if(m63.length) e.push(`Restaurações: ${m63.join("; ")}.`);
+  // A6.4 placa
+  if(getR("ec_usa_placa")==="Sim"){
+    const pl=presents([["ec_placa_atrito","marcas de atrito"],["ec_placa_apert","marcas de apertamento"],["ec_placa_frat","fraturas"]]);
+    e.push(pl.length ? `Dispositivo oral em uso, com: ${pl.join(", ")}.` : "Dispositivo oral em uso, sem alterações registradas.");
+  } else if(getR("ec_usa_placa")==="Não"){
+    e.push("Não utiliza dispositivo oral.");
+  }
+  return e;
+}
+
+function matrixPresents(prefix, rows){
+  const out=[];
+  rows.forEach(([rid,label])=>{
+    const sx=[];
+    SEXTANTES.forEach(s=>{ if(getR(`${rid}_${s}`)==="Presente") sx.push(s); });
+    if(sx.length) out.push(`${label} (${sx.join(", ")})`);
+  });
+  return out;
+}
+
+/* =========================================================
+   Tela 3 — render + ações
+========================================================= */
+function showSummary(){
+  saveValues();
+  const parts = buildSummary();
+  const now = new Date();
+  document.getElementById("summary-meta").textContent =
+    "Gerado em " + now.toLocaleDateString("pt-BR") + " às " + now.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+
+  const body = document.getElementById("summary-body");
+  if(!parts.length){
+    body.innerHTML = `<p class="summary-empty">Nenhuma resposta foi preenchida. Retorne aos módulos para registrar os achados.</p>`;
+  } else {
+    body.innerHTML = parts.map(([h,txt])=>`<h3>${esc(h)}</h3><p>${esc(txt)}</p>`).join("");
+  }
+  switchScreen("screen-summary");
+}
+
+function summaryPlainText(){
+  const parts = buildSummary();
+  const now = new Date();
+  let out = "RESUMO DA AVALIAÇÃO — AvaliaBrux\n";
+  out += "Gerado em " + now.toLocaleDateString("pt-BR") + " às " + now.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) + "\n\n";
+  if(!parts.length){ out += "Nenhuma resposta foi preenchida."; return out; }
+  parts.forEach(([h,txt])=>{ out += h.toUpperCase() + "\n" + txt + "\n\n"; });
+  return out.trim();
+}
+
+/* =========================================================
+   Navegação entre telas
+========================================================= */
+function switchScreen(id){
+  ["screen-home","screen-form","screen-summary"].forEach(s=>{
+    document.getElementById(s).classList.toggle("hidden", s!==id);
+  });
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+function startAvaliacao(){
+  steps = ORDER.filter(k=>selected.has(k));
+  stepIndex = 0;
+  switchScreen("screen-form");
+  showStep(0);
+}
+
+/* =========================================================
+   Toast
+========================================================= */
+let toastTimer=null;
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("show"),2000);
+}
+
+/* =========================================================
+   Reinício completo
+========================================================= */
+function resetAll(){
+  for(const k in STATE) delete STATE[k];
+  selected.clear(); selected.add("anamnese");
+  steps=[]; stepIndex=0;
+  document.getElementById("exclusive-warn").textContent="";
+  renderCards();
+  switchScreen("screen-home");
+}
+
+/* =========================================================
+   Bindings
+========================================================= */
+document.getElementById("btn-start").addEventListener("click", startAvaliacao);
+
+document.getElementById("btn-prev").addEventListener("click", ()=>{
+  saveValues();
+  if(stepIndex>0) showStep(stepIndex-1);
+});
+document.getElementById("btn-next").addEventListener("click", ()=>{
+  saveValues();
+  if(stepIndex < steps.length-1) showStep(stepIndex+1);
+  else showSummary();
+});
+
+document.getElementById("btn-copy").addEventListener("click", async ()=>{
+  const text = summaryPlainText();
+  try{
+    await navigator.clipboard.writeText(text);
+    toast("Texto copiado.");
+  }catch(e){
+    // fallback
+    const ta=document.createElement("textarea");
+    ta.value=text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); toast("Texto copiado."); }
+    catch(_){ toast("Não foi possível copiar."); }
+    document.body.removeChild(ta);
+  }
+});
+
+document.getElementById("btn-restart").addEventListener("click", resetAll);
+
+/* salvar continuamente ao interagir */
+document.getElementById("form-content").addEventListener("change", saveValues);
+document.getElementById("form-content").addEventListener("input", saveValues);
+
+/* init */
+renderCards();
+</script>
+</body>
+</html>
