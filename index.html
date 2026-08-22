@@ -345,12 +345,8 @@ const MODULES = {
       ]},
       { h:"B3 — Comportamentos e condições não relacionados ao sono", fields:[
         {sub:"B3.1 — Comportamentos orais em vigília"},
-        {note:"Com que frequência o paciente apresenta os seguintes comportamentos?"},
+        {note:"Com que frequência o paciente apresenta os seguintes comportamentos? (Apertar, ranger, contato e tensão já foram avaliados no módulo de bruxismo em vigília.)"},
         ...[
-          ["b3_1a","Aperta os dentes sem perceber"],
-          ["b3_1b","Range os dentes sem perceber"],
-          ["b3_1c","Mantém os dentes em contato sem perceber"],
-          ["b3_1d","Tensiona a mandíbula sem perceber"],
           ["b3_1e","Morde a língua, bochechas ou lábios"],
           ["b3_1f","Morde objetos (caneta, unhas, cutículas)"],
           ["b3_1g","Mastiga chicletes"],
@@ -835,8 +831,7 @@ function buildSummary(){
 
     // Comportamentos orais
     const compMap=[
-      ["b3_1a","apertar dentes sem perceber"],["b3_1b","ranger dentes sem perceber"],["b3_1c","manter dentes em contato"],
-      ["b3_1d","tensionar a mandíbula"],["b3_1e","morder língua/bochechas/lábios"],["b3_1f","morder objetos"],
+      ["b3_1e","morder língua/bochechas/lábios"],["b3_1f","morder objetos"],
       ["b3_1g","mascar chiclete"],["b3_1h","apoiar telefone no ombro/queixo"],["b3_1i","esforço mandibular em atividade física"],
       ["b3_1j","apertar dentes ao usar telas"],["b3_1k","cabeça projetada para frente"],["b3_1l","respiração predominantemente bucal"],
       ["b3_1m","dormir com mandíbula apoiada na mão"]
